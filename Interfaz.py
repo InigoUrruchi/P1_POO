@@ -21,6 +21,8 @@ def cargar_configuracion():
 
     configurador.mainloop()
 
+    
+
 def simular():
     p = simulador("escenario//escena.xml")
     p.run()

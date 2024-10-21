@@ -12,30 +12,6 @@
       <geom rgba=".8 .4 .8 1"/>
       <site rgba=".8 .4 .8 1"/>
     </default>
-    <default class="balloon">
-      <!--
-        0.167 is the MKS density of helium at room temperature.
-        Note this does not take into account the mass of the rubber,
-        which is likely not insignificant.
-      -->
-      <geom density="1" fluidshape="ellipsoid"/>
-      <default class="pink">
-        <geom rgba="1 .6 .7 1"/>
-        <site rgba="1 .6 .7 1"/>
-      </default>
-      <default class="blue">
-        <geom rgba=".3 .7 .9 1"/>
-        <site rgba=".3 .7 .9 1"/>
-      </default>
-      <default class="green">
-        <geom rgba=".4 .9 .5 1"/>
-        <site rgba=".4 .9 .5 1"/>
-      </default>
-      <default class="orange">
-        <geom rgba="1 .4 0 1"/>
-        <site rgba="1 .4 0 1"/>
-      </default>
-    </default>
   </default>
 
   <asset>
@@ -46,9 +22,9 @@
   <worldbody>
     <geom name="ground" type="plane" size="5 5 .05" pos="0 0 -.5" material="grid"/>
 
-    <geom name="ramp1" type="box" size=".4 .2 .03" pos="0 0 -.2" euler="0 20 0" rgba="250 255 0 0.8"/>
+    <geom name="ramp1" type="box" size=".4 .2 .03" pos="8 0 -3" euler="0 20 0" rgba="255 0 0 0.8"/>
   
-    <geom name="ramp2" type="box" size=".4 .2 .03" pos="-0.7 0 0.04" euler="0 20 0" rgba="0 11 255 0.8"/>
+    <geom name="ramp2" type="box" size=".4 .2 .03" pos="-3 0 7" euler="0 20 0" rgba="0 11 255 0.8"/>
 
     <body name="ball1" childclass="weight" pos=".05 0 .2" >
       <freejoint/>

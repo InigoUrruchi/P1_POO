@@ -16,8 +16,8 @@ def cargar_configuracion():
     radio1 = customtkinter.CTkEntry(configurador, placeholder_text="Radio de la esfera 1")
     radio1.grid(row=0, column=1, padx=20, pady=20)
 
-    radio_actual = customtkinter.CTkLabel(configurador, text="Radio actual = 2")
-    radio_actual.grid(row=0, column=3, padx=20, pady=20)
+    radio_actual = customtkinter.CTkLabel(configurador, text="Radio de la esfera")
+    radio_actual.grid(row=0, column=0, padx=20, pady=20)
 
     configurador.mainloop()
 

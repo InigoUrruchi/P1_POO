@@ -8,20 +8,18 @@ def pulsar_boton():
 def cargar_configuracion():
     configurador = customtkinter.CTk()
     configurador.title("configurar")
-    configurador.geometry("300x300")
+    configurador.geometry("1000x1000")
 
-    button3 = customtkinter.CTkButton(configurador, text="Cargar Configuracion", command=pulsar_boton)
-    button3.grid(row=2, column=0, padx=20, pady=20)
+    button3 = customtkinter.CTkButton(configurador, text="Aceptar", command=pulsar_boton)
+    button3.grid(row=0, column=7, padx=20, pady=20)
 
     radio1 = customtkinter.CTkEntry(configurador, placeholder_text="Radio de la esfera 1")
-    radio1.grid(row=0, column=0, padx=20, pady=20)
-
-    radio_actual = customtkinter.CTkLabel(configurador, text = 'Radio actual = 2')
     radio1.grid(row=0, column=1, padx=20, pady=20)
 
-    configurador.mainloop()
+    radio_actual = customtkinter.CTkLabel(configurador, text="Radio actual = 2")
+    radio_actual.grid(row=0, column=3, padx=20, pady=20)
 
-    
+    configurador.mainloop()
 
 def simular():
     p = simulador("escenario//escena.xml")

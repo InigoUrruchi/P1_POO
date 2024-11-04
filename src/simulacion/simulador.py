@@ -20,7 +20,7 @@ import numpy as np
 mouse_x = 0
 mouse_y = 0
 button_left = False
-object_name = 'green_sphere'  # Nombre del objeto a mover
+object_name = 'ball'  # Nombre del objeto a mover
 object_id = None
 
 class simulador:
@@ -28,7 +28,7 @@ class simulador:
     # Inicialización de MuJoCo
     def __init__(self, path):
         #global model, data, scene, cam, window, context, opt, object_id
-
+        #self.model = None
         # Inicialización de GLFW
         if not glfw.init():
             raise RuntimeError("Failed to initialize GLFW")
@@ -116,11 +116,25 @@ class simulador:
             glfw.poll_events()
 
         glfw.terminate()
+    
+
+    #obtiene el radio de la bola
+    def obtener_radio(self):
+        print(f"radio = {self.model.geom_size[self.object_id][0]}")
+        return self.model.geom_size[self.object_id][0]
+    
+    def actualizar_radio(self, nuevo_valor):
+        self.model.geom_size[self.object_id][0] = nuevo_valor
+        print(f"radio = {self.model.geom_size[self.object_id][0]}")
+        
+    
+
+
 
 
         
-def main():
+'''def main():
     simulation = simulador("escenario//escena.xml")
     simulation.run()
 if __name__ == "__main__":
-    main()
+    main()'''

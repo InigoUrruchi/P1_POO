@@ -120,12 +120,14 @@ class simulador:
 
     #obtiene el radio de la bola
     def obtener_radio(self):
-        print(f"radio = {self.model.geom_size[self.object_id][0]}")
-        return self.model.geom_size[self.object_id][0]
+        valor_radio = self.model.geom_size[self.object_id][0]
+        print(f"radio = {valor_radio}")
+        return valor_radio
     
+    #Actualiza el radio de la bola
     def actualizar_radio(self, nuevo_valor):
         self.model.geom_size[self.object_id][0] = nuevo_valor
-        print(f"radio = {self.model.geom_size[self.object_id][0]}")
+        return nuevo_valor
         
     
 

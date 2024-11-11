@@ -20,8 +20,13 @@ import numpy as np
 mouse_x = 0
 mouse_y = 0
 button_left = False
+button_right = False
+scroll_up = False
+scroll_down = False
 object_name = 'ball'  # Nombre del objeto a mover
 object_id = None
+
+
 
 class simulador:
 
@@ -53,13 +58,22 @@ class simulador:
 
         mj.mjv_defaultCamera(self.cam)
         mj.mjv_defaultOption(self.opt)
-        
+
+        self.cam.lookat = [0,0,0.5]
+
         # Configurar callbacks de mouse
         glfw.set_cursor_pos_callback(self.window, self.mouse_move)
         glfw.set_mouse_button_callback(self.window, self.mouse_button)
-        
+        glfw.set_scroll_callback(self.window, self.mouse_scroll)
+
         # Obtener el ID del objeto para actualizar su posición
         self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
+
+        # Variables para el control de la cámara
+        self.mouse_pressed_right = False
+        self.prev_mouse_x = 0
+        self.prev_mouse_y = 0
+        self.zoom_factor = 1.0 #Distancia de la camara "zoom"
 
     def keyboard(self, window, key, scancode, act, mods):
         # Resetea la simulación con la tecla BACKSPACE
@@ -74,16 +88,40 @@ class simulador:
         if act == glfw.PRESS and (key == glfw.KEY_A or key == glfw.KEY_A):
             self.interact_with_object()
 
+    def mouse_scroll(self, window, xoffset, yoffset):
+        #Esta función es llamada cuando se usa la ruleta del ratón
+        if yoffset > 0:  # Hacia arriba (acercar)
+            self.zoom_factor += 0.1  # Acercar la cámara
+        elif yoffset < 0:  # Hacia abajo (alejar)
+            self.zoom_factor -= 0.1  # Alejar la cámara
+        
+        # Cambiar el radio de visión de la cámara para simular el zoom
+        self.cam.distance = max(0.25, min(self.cam_distance + self.zoom_factor, 5))
+
 
     def mouse_move(self, window, xpos, ypos):
         global mouse_x, mouse_y
-        mouse_x = xpos
-        mouse_y = ypos
+
+        # Calcular el desplazamiento en el movimiento del ratón
+        dx = xpos - self.prev_mouse_x  # Diferencia en el eje X
+        dy = ypos - self.prev_mouse_y  # Diferencia en el eje Y
+
+        # Si el botón derecho está presionado, mover la cámara
+        if self.mouse_pressed_right:
+            # Ajustar azimuth (rotación horizontal) y elevation (rotación vertical)
+            self.cam.azimuth += dx * 0.1  # Escala de rotación horizontal
+            self.cam.elevation += dy * 0.1  # Escala de rotación vertical
+
+        # Actualizar las posiciones anteriores del ratón
+        self.prev_mouse_x = xpos
+        self.prev_mouse_y = ypos
 
     def mouse_button(self, window, button, action, mods):
-        global button_left
+        global button_left, button_right
         if button == glfw.MOUSE_BUTTON_LEFT:
             button_left = (action == glfw.PRESS)
+        elif button == glfw.MOUSE_BUTTON_RIGHT:
+            self.mouse_pressed_right = (action == glfw.PRESS)
 
     def update_object_position(self):
         if object_id is not None:

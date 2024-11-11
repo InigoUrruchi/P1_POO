@@ -92,7 +92,7 @@ def llamar_actualizar_radio(nuevo_valor, radio_actual):
         simulation.actualizar_radio(nuevo_valor)
         
         #Actualiza el valor en la etiqueta
-        radio_actual.configure(text=nuevo_valor)
+        radio_actual.configure(text=f"Radio actual: {round(nuevo_valor, 2)}")
 
 app = customtkinter.CTk()
 app.title("my app")

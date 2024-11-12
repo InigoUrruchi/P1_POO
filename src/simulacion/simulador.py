@@ -21,9 +21,8 @@ mouse_x = 0
 mouse_y = 0
 button_left = False
 button_right = False
-scroll_up = False
-scroll_down = False
-object_name = 'ball'  # Nombre del objeto a mover
+ball_name = 'ball'  # Nombre del objeto a mover
+ramp_name = 'ramp'
 object_id = None
 
 
@@ -67,7 +66,8 @@ class simulador:
         glfw.set_scroll_callback(self.window, self.mouse_scroll)
 
         # Obtener el ID del objeto para actualizar su posición
-        self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
+        self.ramp_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, ramp_name)
+        self.ball_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, ball_name)
 
         # Variables para el control de la cámara
         self.mouse_pressed_right = False
@@ -89,15 +89,11 @@ class simulador:
             self.interact_with_object()
 
     def mouse_scroll(self, window, xoffset, yoffset):
-        #Esta función es llamada cuando se usa la ruleta del ratón
-        if yoffset > 0:  # Hacia arriba (acercar)
-            self.zoom_factor += 0.1  # Acercar la cámara
-        elif yoffset < 0:  # Hacia abajo (alejar)
-            self.zoom_factor -= 0.1  # Alejar la cámara
-        
-        # Cambiar el radio de visión de la cámara para simular el zoom
-        self.cam.distance = max(0.25, min(self.cam_distance + self.zoom_factor, 5))
-
+        #Esta función es llamada cuando se usa la ruleta del ratón        
+        if yoffset > 0 and self.cam.distance > 0.6:  # Hacia arriba (acercar)
+            self.cam.distance -= 0.3  # Acercar la cámara
+        elif yoffset < 0 and self.cam.distance < 7.5:  # Hacia abajo (alejar)
+            self.cam.distance += 0.3 
 
     def mouse_move(self, window, xpos, ypos):
         global mouse_x, mouse_y
@@ -124,7 +120,7 @@ class simulador:
             self.mouse_pressed_right = (action == glfw.PRESS)
 
     def update_object_position(self):
-        if object_id is not None:
+        if ball_id is not None:
             # Convertir las coordenadas del mouse a una posición en el mundo
             # Aquí se asume una conversión simple para demostrar el concepto.
             # En un caso real, deberías aplicar una transformación más precisa.
@@ -135,7 +131,7 @@ class simulador:
                 0.2  # Mantener la posición en Z constante, o ajustarla según sea necesario
             ])
             
-            self.model.geom_pos[object_id] = new_position
+            self.model.geom_pos[ball_id] = new_position
 
     def run(self):
         while not glfw.window_should_close(self.window):
@@ -157,21 +153,34 @@ class simulador:
     
 
     #obtiene el radio de la bola
-    def obtener_radio(self):
-        valor_radio = self.model.geom_size[self.object_id][0]
+    def obtener_radio(self,id):
+        valor_radio = self.model.geom_size[id][0]
         print(f"radio = {valor_radio}")
+        print("obtener_radio ejecutada")
         return valor_radio
     
     #Actualiza el radio de la bola
-    def actualizar_radio(self, nuevo_valor):
-        self.model.geom_size[self.object_id][0] = nuevo_valor
+    def actualizar_radio(self, nuevo_valor, id):
+        self.model.geom_size[id][0] = nuevo_valor
+        print("actualizar_radio ejecutada")
         return nuevo_valor
         
+    '''def obtener_id(self, object_name):
+        self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
+        print(f"el id de: {object_name} es : {self.object_id}")'''
+
+    #Obtiene la inclinacion de la rampa
+    '''def obtener_inclinacion(self,id):
+        valor_inclinacion = self.model.geom_euler[id][1]
+        print(f"inclinacion = {valor_inclinacion}")
+        print("obtener_inclinacion ejecutada")
+        return valor_inclinacion
     
-
-
-
-
+    #Actualiza la inclinacion de la rampa
+    def actualizar_inclinacion(self, nuevo_valor, id):
+        self.model.geom_euler[id][1] = nuevo_valor
+        print("actualizar_inclinacion ejecutada")
+        return nuevo_valor'''
         
 '''def main():
     simulation = simulador("escenario//escena.xml")

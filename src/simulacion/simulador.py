@@ -21,11 +21,9 @@ mouse_x = 0
 mouse_y = 0
 button_left = False
 button_right = False
-ball_name = 'ball'  # Nombre del objeto a mover
-ramp_name = 'ramp'
+object_name = 'ball'  # Nombre del objeto a mover
+object_name = 'ramp'
 object_id = None
-
-
 
 class simulador:
 
@@ -64,16 +62,15 @@ class simulador:
         glfw.set_cursor_pos_callback(self.window, self.mouse_move)
         glfw.set_mouse_button_callback(self.window, self.mouse_button)
         glfw.set_scroll_callback(self.window, self.mouse_scroll)
-
-        # Obtener el ID del objeto para actualizar su posición
-        self.ramp_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, ramp_name)
-        self.ball_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, ball_name)
-
+        
         # Variables para el control de la cámara
         self.mouse_pressed_right = False
         self.prev_mouse_x = 0
         self.prev_mouse_y = 0
         self.zoom_factor = 1.0 #Distancia de la camara "zoom"
+
+   
+    
 
     def keyboard(self, window, key, scancode, act, mods):
         # Resetea la simulación con la tecla BACKSPACE
@@ -119,8 +116,9 @@ class simulador:
         elif button == glfw.MOUSE_BUTTON_RIGHT:
             self.mouse_pressed_right = (action == glfw.PRESS)
 
-    def update_object_position(self):
-        if ball_id is not None:
+    def update_object_position(self, object_name):
+        object_id = self.obtener_id_objeto(object_name)
+        if object_id is not None:
             # Convertir las coordenadas del mouse a una posición en el mundo
             # Aquí se asume una conversión simple para demostrar el concepto.
             # En un caso real, deberías aplicar una transformación más precisa.
@@ -131,7 +129,7 @@ class simulador:
                 0.2  # Mantener la posición en Z constante, o ajustarla según sea necesario
             ])
             
-            self.model.geom_pos[ball_id] = new_position
+            self.model.geom_pos[object_id] = new_position
 
     def run(self):
         while not glfw.window_should_close(self.window):
@@ -153,15 +151,17 @@ class simulador:
     
 
     #obtiene el radio de la bola
-    def obtener_radio(self,id):
-        valor_radio = self.model.geom_size[id][0]
+    def obtener_radio(self,object_name):
+        object_id = self.obtener_id_objeto(object_name)
+        valor_radio = self.model.geom_size[object_id][0]
         print(f"radio = {valor_radio}")
         print("obtener_radio ejecutada")
         return valor_radio
     
     #Actualiza el radio de la bola
-    def actualizar_radio(self, nuevo_valor, id):
-        self.model.geom_size[id][0] = nuevo_valor
+    def actualizar_radio(self, nuevo_valor, object_name):
+        object_id = self.obtener_id_objeto(object_name)
+        self.model.geom_size[object_id][0] = nuevo_valor
         print("actualizar_radio ejecutada")
         return nuevo_valor
         
@@ -169,18 +169,26 @@ class simulador:
         self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
         print(f"el id de: {object_name} es : {self.object_id}")'''
 
+      # Obtener el ID del objeto
+    def obtener_id_objeto(self, object_name):
+        object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
+        print(f"la id de: {object_name} es :{object_id}")
+        return object_id
+
     #Obtiene la inclinacion de la rampa
-    '''def obtener_inclinacion(self,id):
-        valor_inclinacion = self.model.geom_euler[id][1]
+    def obtener_inclinacion(self,object_name):
+        object_id = self.obtener_id_objeto(object_name)
+        valor_inclinacion = self.model.geom_euler[object_id][1]
         print(f"inclinacion = {valor_inclinacion}")
         print("obtener_inclinacion ejecutada")
         return valor_inclinacion
     
     #Actualiza la inclinacion de la rampa
-    def actualizar_inclinacion(self, nuevo_valor, id):
-        self.model.geom_euler[id][1] = nuevo_valor
+    def actualizar_inclinacion(self, nuevo_valor, object_name):
+        object_id = self.obtener_id_objeto(object_name)
+        self.model.geom_euler[object_id][1] = nuevo_valor
         print("actualizar_inclinacion ejecutada")
-        return nuevo_valor'''
+        return nuevo_valor
         
 '''def main():
     simulation = simulador("escenario//escena.xml")

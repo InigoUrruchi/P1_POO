@@ -32,7 +32,7 @@
       <site name="weight1" pos=".013 .013 .013" size="0.005" />
     </body>
 
-    <body name="ball2" pos="0 0 3">
+    <body name="ball2" pos="1 0 3">
       <freejoint />
       <light pos="1 0 3" dir="-1 0 -3" mode="trackcom" />
       <light pos="-1 0 3" dir="1 0 -3" mode="trackcom" />

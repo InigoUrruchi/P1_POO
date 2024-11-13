@@ -7,9 +7,9 @@ import threading
 filepath = None
 simulation = None
 radio_actual = None
-id_bola = 3
-id_rampa = 1
 inclinacion_actual = None
+nombre_bola = "bola1"
+nombre_rampa = "ranpa1"
 
 def pulsar_boton():
     print("Boton pulsado")
@@ -36,6 +36,9 @@ def cargar_configuracion():
     global simulation
     global radio_actual
     global inclinacion_actual
+    global nombre_bola
+    global nombre_rampa
+
 
     configurador = customtkinter.CTk()
     configurador.title("configurar")
@@ -49,17 +52,17 @@ def cargar_configuracion():
     archivo_actual = customtkinter.CTkLabel(configurador, text= filepath)
     archivo_actual.grid(row=3, column=1, padx=20, pady=20)'''
     #Actualiza el valor del radio de la bola
-    elegir_radio = customtkinter.CTkSlider(configurador, from_=0.1, to=2, command=lambda valor: llamar_actualizar_radio(valor, radio_actual, id_bola))
+    elegir_radio = customtkinter.CTkSlider(configurador, from_=0.1, to=2, command=lambda valor: llamar_actualizar_radio(valor, radio_actual, menu_bola.get()))
     elegir_radio.grid(row=1, column=2, padx=20, pady=20)
 
     #Muestra el valor del radio de la bola en tiempo real
-    radio_actual = customtkinter.CTkLabel(configurador, text=f"Radio actual: {simulation.obtener_radio(id_bola)}")
+    radio_actual = customtkinter.CTkLabel(configurador, text=f"Radio actual: {simulation.obtener_radio(nombre_bola)}")
     radio_actual.grid(row=1, column=1, padx=10, pady=10)
 
-    menu_bola = customtkinter.CTkOptionMenu(configurador, values=["ball1", "ball2"] , command=lambda valor: elegir_id(valor, elegir_radio))
+    menu_bola = customtkinter.CTkOptionMenu(configurador, values=["ball1", "ball2"])
     menu_bola.grid(row=0, column=2, padx=20, pady=20)
 
-    menu_rampa = customtkinter.CTkOptionMenu(configurador, values=["ramp1", "ramp2"] , command=lambda valor: elegir_id(valor))
+    menu_rampa = customtkinter.CTkOptionMenu(configurador, values=["ramp1", "ramp2"])
     menu_rampa.grid(row=0, column=4, padx=20, pady=20)
 
     etiqueta_bola = customtkinter.CTkLabel(configurador, text = "Elige la bola")
@@ -68,11 +71,11 @@ def cargar_configuracion():
     etiqueta_rampa = customtkinter.CTkLabel(configurador, text = "Elige la rampa")
     etiqueta_rampa.grid(row=0, column=3, padx=10, pady=20)
 
-    '''elegir_inclinacion = customtkinter.CTkSlider(configurador, from_=0.1, to=85, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, id_rampa))
-    elegir_inclinacion.grid(row=1, column=2, padx=20, pady=20)
+    elegir_inclinacion = customtkinter.CTkSlider(configurador, from_=0.1, to=85, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, menu_rampa.get()))
+    elegir_inclinacion.grid(row=2, column=2, padx=20, pady=20)
 
-    inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(id_rampa)}")
-    inclinacion_actual.grid(row=1, column=1, padx=10, pady=10)'''
+    inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(nombre_rampa)}")
+    inclinacion_actual.grid(row=2, column=1, padx=10, pady=10)
 
     configurador.mainloop()
 
@@ -110,27 +113,27 @@ def abrir_archivo():
     iniciar.configure(state = "enabled")
     return filepath
 
-def llamar_actualizar_radio(nuevo_valor, radio_actual, id_bola):
+def llamar_actualizar_radio(nuevo_valor, radio_actual, nombre_bola):
         #Actualiza el radio de la esfera
-        simulation.actualizar_radio(nuevo_valor, id_bola)
+        simulation.actualizar_radio(nuevo_valor, nombre_bola)
         
         #Actualiza el valor en la etiqueta
         radio_actual.configure(text=f"Radio actual: {round(nuevo_valor, 2)}")
 
-'''def llamar_actualizar_inclinacion(nuevo_valor, inclinacion_actual, id_rampa):
+def llamar_actualizar_inclinacion(nuevo_valor, inclinacion_actual, nombre_rampa):
         #Actualiza la inclinacion de la rampa
-        simulation.actualizar_inclinacion(nuevo_valor, id_rampa)
+        simulation.actualizar_inclinacion(nuevo_valor, nombre_rampa)
 
         #Actualiza el valor en la etiqueta
-        inclinacion_actual.configure(text=f"Inclinacion actual: {round(nuevo_valor, 2)}")'''
+        inclinacion_actual.configure(text=f"Inclinacion actual: {round(nuevo_valor, 2)}")
 
-def actualizar_datos_bola(id, elegir_radio):
+def actualizar_datos_bola(nombre_bola, elegir_radio):
     global simulation
     
     print(f"Radio primera bola: {elegir_radio.get()}")
 
     #Obtener el valor del radio de la bola elegida
-    valor_radio = simulation.obtener_radio(id)
+    valor_radio = simulation.obtener_radio(nombre_bola)
     #Cambia el valor que muestra la etiqueta por el de la bola elegid
     radio_actual.configure(text=f"Radio actual: {round(valor_radio, 2)}")
     #Cambia la posicion del slider a la correspondiente con la del radio de la bola elegida
@@ -138,22 +141,22 @@ def actualizar_datos_bola(id, elegir_radio):
     print(f"Radio segunda bola: {elegir_radio.get()}")
     print("La posicion del slider se ha actualizado")
 
-'''def actualizar_datos_rampa(id, elegir_inclinacion):
+def actualizar_datos_rampa(nombre_rampa, elegir_inclinacion):
     global simulation
 
     print(f"Radio primera bola: {elegir_inclinacion.get()}")
 
     #Obtener el valor del radio de la bola elegida
-    valor_inclinacion = simulation.obtener_inclinacion(id)
+    valor_inclinacion = simulation.obtener_inclinacion(nombre_rampa)
     #Cambia el valor que muestra la etiqueta por el de la bola elegid
     inclinacion_actual.configure(text=f"Inclinacion actual: {round(valor_inclinacion, 2)}")
     #Cambia la posicion del slider a la correspondiente con la del radio de la bola elegida
     elegir_inclinacion.set(valor_inclinacion)
     print(f"Radio segunda bola: {elegir_inclinacion.get()}")
-    print("La posicion del slider se ha actualizado")'''
+    print("La posicion del slider se ha actualizado")
 
 
-def elegir_id(valor, elegir_radio):
+'''def elegir_id(valor, elegir_radio):
     print(valor)
     global id_rampa
     global id_bola
@@ -173,7 +176,7 @@ def elegir_id(valor, elegir_radio):
 
     print("rampa: ",id_rampa)
     print("bola: ",id_bola)
-    return id_bola, id_rampa
+    return id_bola, id_rampa'''
          
 
 '''def id_objeto():

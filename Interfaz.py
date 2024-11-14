@@ -77,7 +77,7 @@ def cargar_configuracion():
     inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(nombre_rampa)}")
     inclinacion_actual.grid(row=2, column=1, padx=10, pady=10)
 
-    resetear_bolas = customtkinter.CTkButton(app, text="Buscar Archivo", command=buscar_configuracion_hilo)
+    resetear_bolas = customtkinter.CTkButton(configurador, text="Reiniciar las posiciones de las bolas", command=simulation.reiniciar_bolas(), fg_color= 'red')
     resetear_bolas.grid(row=3, column=0, padx=20, pady=20)
 
     configurador.mainloop()

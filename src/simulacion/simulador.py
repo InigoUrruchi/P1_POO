@@ -24,7 +24,7 @@ button_right = False
 object_name = 'ball'
 object_name = 'ramp'
 object_id = None
-
+posiciones_iniciales = {}
 class simulador:
 
     # Inicialización de MuJoCo
@@ -58,6 +58,11 @@ class simulador:
 
         self.cam.lookat = [0,0,0.5]
 
+        #Guardar las posiciones iniciales de las bolas
+        mj.mj_step(self.model, self.data)
+        self.guardar_posicion_inicial("ball1")
+        self.guardar_posicion_inicial("ball2")
+        
         # Configurar callbacks de mouse
         glfw.set_cursor_pos_callback(self.window, self.mouse_move)
         glfw.set_mouse_button_callback(self.window, self.mouse_button)
@@ -68,6 +73,14 @@ class simulador:
         self.prev_mouse_x = 0
         self.prev_mouse_y = 0
         self.zoom_factor = 1.0 #Distancia de la camara "zoom"
+
+    def guardar_posicion_inicial(self, object_name):
+        global posiciones_iniciales
+        object_id = self.obtener_id_objeto(object_name)
+        posicion_inicial = self.model.geom_pos[object_id]
+        posiciones_iniciales[object_name] = posicion_inicial
+        print("Posiciones guardadas")
+        return posiciones_iniciales
 
     def mouse_scroll(self, window, xoffset, yoffset):
         #Esta función es llamada cuando se usa la ruleta del ratón        
@@ -100,16 +113,10 @@ class simulador:
         elif button == glfw.MOUSE_BUTTON_RIGHT:
             self.mouse_pressed_right = (action == glfw.PRESS)
     
-
-
     def run(self):
         while not glfw.window_should_close(self.window):
             mj.mj_step(self.model, self.data)
             mj.mj_forward(self.model, self.data)
-        
-            # Actualizar la posición del objeto si el botón izquierdo está presionado
-            if button_left:
-                self.update_object_position(object_name)
             
             # Actualizar la escena y renderizar
             mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam, mj.mjtCatBit.mjCAT_ALL.value, self.scene)
@@ -120,6 +127,15 @@ class simulador:
 
         glfw.terminate()
     
+    def reiniciar_bolas(self):
+        global posiciones_iniciales
+        nombres_objetos = list(posiciones_iniciales.keys())
+        for n in range(len (posiciones_iniciales)):
+            object_name = nombres_objetos[n]
+            object_id = self.obtener_id_objeto(object_name)
+            posicion_inicial = posiciones_iniciales[object_name]
+            self.model.geom_pos[object_id] = posicion_inicial
+            print(f"Posicion de {object_name} es {posicion_inicial}")
 
     #obtiene el radio de la bola
     def obtener_radio(self,object_name):

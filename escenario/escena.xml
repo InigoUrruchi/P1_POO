@@ -21,8 +21,8 @@
 
   <worldbody>
     <geom name="ground" type="plane" size="10 10 0.001" pos="0 0 0" material="grid" />
-    <geom name="ramp1" type="box" size="1.5 0.4 0.03" pos="0 0 0.125" euler="0 60 0" material="metal" />
-    <geom name="ramp2" type="box" size="0.4 0.2 0.03" pos="4 0 0.125" euler="0 20 0" material="metal" />
+    <geom name="ramp1" type="box" size="2 1 0.03" pos="0 1 0" euler="0 90 0" material="metal" />
+    <geom name="ramp2" type="box" size="2 1 0.03" pos="4 1 0" euler="0 90 0" material="metal" />
 
     <body name="ball1" pos="0 0 3">
       <freejoint />

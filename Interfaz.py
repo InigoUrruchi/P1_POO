@@ -8,8 +8,8 @@ filepath = None
 simulation = None
 radio_actual = None
 inclinacion_actual = None
-nombre_bola = "bola1"
-nombre_rampa = "ranpa1"
+nombre_bola = "ball1"
+nombre_rampa = "ramp1"
 
 def pulsar_boton():
     print("Boton pulsado")
@@ -59,10 +59,10 @@ def cargar_configuracion():
     radio_actual = customtkinter.CTkLabel(configurador, text=f"Radio actual: {simulation.obtener_radio(nombre_bola)}")
     radio_actual.grid(row=1, column=1, padx=10, pady=10)
 
-    menu_bola = customtkinter.CTkOptionMenu(configurador, values=["ball1", "ball2"])
+    menu_bola = customtkinter.CTkOptionMenu(configurador, values=["ball1", "ball2"], command=lambda valor: actualizar_datos_bola(valor, elegir_radio))
     menu_bola.grid(row=0, column=2, padx=20, pady=20)
 
-    menu_rampa = customtkinter.CTkOptionMenu(configurador, values=["ramp1", "ramp2"])
+    menu_rampa = customtkinter.CTkOptionMenu(configurador, values=["ramp1", "ramp2"], command= lambda valor : actualizar_datos_rampa(valor, elegir_inclinacion))
     menu_rampa.grid(row=0, column=4, padx=20, pady=20)
 
     etiqueta_bola = customtkinter.CTkLabel(configurador, text = "Elige la bola")
@@ -77,12 +77,15 @@ def cargar_configuracion():
     inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(nombre_rampa)}")
     inclinacion_actual.grid(row=2, column=1, padx=10, pady=10)
 
+    resetear_bolas = customtkinter.CTkButton(app, text="Buscar Archivo", command=buscar_configuracion_hilo)
+    resetear_bolas.grid(row=3, column=0, padx=20, pady=20)
+
     configurador.mainloop()
 
 #Iniciar la configuracion como un hilo
 def configurar():
-     hilo2 = threading.Thread(target = cargar_configuracion)
-     hilo2.start()
+    hilo2 = threading.Thread(target = cargar_configuracion)
+    hilo2.start()
 
 #Iniciar el simulador
 def simular():
@@ -95,11 +98,11 @@ def simular():
         print("El archivo no existe")
 
 def iniciar_simulacion():
-     hilo = threading.Thread(target = simular)
-     hilo.start()
+    hilo = threading.Thread(target = simular)
+    hilo.start()
 
-     #Activa el boton de configurar cuando se inicia la simulacion
-     cargar.configure(state="enabled")
+    #Activa el boton de configurar cuando se inicia la simulacion
+    cargar.configure(state="enabled") 
 
 #Selecciona el archivo XML y lo abre
 def abrir_archivo():

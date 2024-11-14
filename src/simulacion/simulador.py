@@ -21,7 +21,7 @@ mouse_x = 0
 mouse_y = 0
 button_left = False
 button_right = False
-object_name = 'ball'  # Nombre del objeto a mover
+object_name = 'ball'
 object_name = 'ramp'
 object_id = None
 
@@ -40,7 +40,7 @@ class simulador:
         if not self.window:
             glfw.terminate()
             raise RuntimeError("Failed to create GLFW window")
-        
+
         # Hacer que el contexto OpenGL sea actual
         glfw.make_context_current(self.window)
         glfw.swap_interval(1)  # Habilitar V-Sync
@@ -62,28 +62,12 @@ class simulador:
         glfw.set_cursor_pos_callback(self.window, self.mouse_move)
         glfw.set_mouse_button_callback(self.window, self.mouse_button)
         glfw.set_scroll_callback(self.window, self.mouse_scroll)
-        
+
         # Variables para el control de la cámara
         self.mouse_pressed_right = False
         self.prev_mouse_x = 0
         self.prev_mouse_y = 0
         self.zoom_factor = 1.0 #Distancia de la camara "zoom"
-
-   
-    
-
-    def keyboard(self, window, key, scancode, act, mods):
-        # Resetea la simulación con la tecla BACKSPACE
-        if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
-            mj.mj_resetData(self.model, self.data)
-            mj.mj_forward(self.model, self.data)
-            for i in range(len(self.initial_joint_angles)):
-                self.data.qpos[i] = self.initial_joint_angles[i]
-            mj.mj_forward(self.model, self.data)
-        
-        # Activa la interacción con la tecla A o a
-        if act == glfw.PRESS and (key == glfw.KEY_A or key == glfw.KEY_A):
-            self.interact_with_object()
 
     def mouse_scroll(self, window, xoffset, yoffset):
         #Esta función es llamada cuando se usa la ruleta del ratón        
@@ -115,21 +99,8 @@ class simulador:
             button_left = (action == glfw.PRESS)
         elif button == glfw.MOUSE_BUTTON_RIGHT:
             self.mouse_pressed_right = (action == glfw.PRESS)
+    
 
-    def update_object_position(self, object_name):
-        object_id = self.obtener_id_objeto(object_name)
-        if object_id is not None:
-            # Convertir las coordenadas del mouse a una posición en el mundo
-            # Aquí se asume una conversión simple para demostrar el concepto.
-            # En un caso real, deberías aplicar una transformación más precisa.
-            scale_factor = 0.001  # Factor de escala para convertir el movimiento del mouse a unidades del mundo
-            new_position = np.array([
-                (mouse_x - 600) * scale_factor,  # Ajustar según el centro de la ventana
-                (450 - mouse_y) * scale_factor,  # Ajustar según el centro de la ventana
-                0.2  # Mantener la posición en Z constante, o ajustarla según sea necesario
-            ])
-            
-            self.model.geom_pos[object_id] = new_position
 
     def run(self):
         while not glfw.window_should_close(self.window):
@@ -138,7 +109,7 @@ class simulador:
         
             # Actualizar la posición del objeto si el botón izquierdo está presionado
             if button_left:
-                self.update_object_position()
+                self.update_object_position(object_name)
             
             # Actualizar la escena y renderizar
             mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam, mj.mjtCatBit.mjCAT_ALL.value, self.scene)
@@ -165,31 +136,60 @@ class simulador:
         print("actualizar_radio ejecutada")
         return nuevo_valor
         
-    '''def obtener_id(self, object_name):
+    def obtener_id(self, object_name):
         self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
-        print(f"el id de: {object_name} es : {self.object_id}")'''
+        print(f"el id de: {object_name} es : {self.object_id}")
 
       # Obtener el ID del objeto
     def obtener_id_objeto(self, object_name):
         object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
-        print(f"la id de: {object_name} es :{object_id}")
+        print(f"el id de: {object_name} es :{object_id}")
         return object_id
+
+    #Calcula el angulo de rotacion a traves del quaternion y lo pasa a grados
+    def calcular_angulo(self, valor_inclinacion):
+        #Obtener la parte real del quaternion (w)
+        w = valor_inclinacion[0]
+        #Calcular el angulo en radianes
+        angulo_rad = 2 * np.arccos(w)
+        #Calcular el angulo en grados
+        angulo_grados = np.degrees(angulo_rad)
+        return angulo_grados
+    
+    def calcular_cuaternion(self, angulo_grados):
+        #Calcula el angulo en radianes
+        angulo_radianes = np.radians(angulo_grados)
+        #Calcula la parte real del cuaternion
+        w = np.cos(angulo_radianes/2)
+        #Calcula las componentes del cuaternion (las componentes x,z son 0 porque la rotacion de la rampa es sobre el eje y)
+        x = 0
+        y = np.sin(angulo_radianes/2)
+        z = 0
+        #Crea el cuaternion
+        cuaternion = (w,x,y,z)
+        return cuaternion
 
     #Obtiene la inclinacion de la rampa
     def obtener_inclinacion(self,object_name):
         object_id = self.obtener_id_objeto(object_name)
-        valor_inclinacion = self.model.geom_euler[object_id][1]
-        print(f"inclinacion = {valor_inclinacion}")
+        #Devuelve un quaternion con la informacion de la inclinacion de la rampa
+        valor_inclinacion = self.model.geom_quat[object_id]
+        
         print("obtener_inclinacion ejecutada")
-        return valor_inclinacion
+        #Obtiene el angulo a partir de quaternion
+        angulo_inclinacion = self.calcular_angulo(valor_inclinacion)
+        print(f"inclinacion = {angulo_inclinacion}")
+        return angulo_inclinacion
     
     #Actualiza la inclinacion de la rampa
     def actualizar_inclinacion(self, nuevo_valor, object_name):
         object_id = self.obtener_id_objeto(object_name)
-        self.model.geom_euler[object_id][1] = nuevo_valor
+        #Calcula el quaternion del angulo que se quiere añadir
+        inclinacion =  self.calcular_cuaternion(nuevo_valor)
+        self.model.geom_quat[object_id] = inclinacion
         print("actualizar_inclinacion ejecutada")
         return nuevo_valor
-        
+
 '''def main():
     simulation = simulador("escenario//escena.xml")
     simulation.run()

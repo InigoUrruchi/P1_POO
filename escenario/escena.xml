@@ -24,7 +24,7 @@
     <geom name="ramp1" type="box" size="2 1 0.03" pos="0 1 0" euler="0 90 0" material="metal" />
     <geom name="ramp2" type="box" size="2 1 0.03" pos="4 1 0" euler="0 90 0" material="metal" />
 
-    <body name="ball1" pos="0 0 3">
+    <body name="ball1" pos="4 0 3">
       <freejoint />
       <light pos="1 0 3" dir="-1 0 -3" mode="trackcom" />
       <light pos="-1 0 3" dir="1 0 -3" mode="trackcom" />
@@ -32,7 +32,7 @@
       <site name="weight1" pos=".013 .013 .013" size="0.005" />
     </body>
 
-    <body name="ball2" pos="1 0 3">
+    <body name="ball2" pos="6 0 2">
       <freejoint />
       <light pos="1 0 3" dir="-1 0 -3" mode="trackcom" />
       <light pos="-1 0 3" dir="1 0 -3" mode="trackcom" />

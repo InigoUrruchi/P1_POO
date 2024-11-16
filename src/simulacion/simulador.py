@@ -74,14 +74,6 @@ class simulador:
         self.prev_mouse_y = 0
         self.zoom_factor = 1.0 #Distancia de la camara "zoom"
 
-    def guardar_posicion_inicial(self, object_name):
-        global posiciones_iniciales
-        object_id = self.obtener_id_objeto(object_name)
-        posicion_inicial = self.model.geom_pos[object_id]
-        posiciones_iniciales[object_name] = posicion_inicial
-        print("Posiciones guardadas")
-        return posiciones_iniciales
-
     def mouse_scroll(self, window, xoffset, yoffset):
         #Esta función es llamada cuando se usa la ruleta del ratón        
         if yoffset > 0 and self.cam.distance > 0.6:  # Hacia arriba (acercar)
@@ -127,15 +119,59 @@ class simulador:
 
         glfw.terminate()
     
+    #Cambia la posicion de las bolas a la posicion inicial
     def reiniciar_bolas(self):
         global posiciones_iniciales
         nombres_objetos = list(posiciones_iniciales.keys())
         for n in range(len (posiciones_iniciales)):
             object_name = nombres_objetos[n]
             object_id = self.obtener_id_objeto(object_name)
+            #Se obtiene el id del body atraves del id del geom
+            body_id = self.model.geom_bodyid[object_id]
+            print(f"body id: {body_id}")
             posicion_inicial = posiciones_iniciales[object_name]
-            self.model.geom_pos[object_id] = posicion_inicial
-            print(f"Posicion de {object_name} es {posicion_inicial}")
+            
+            if object_name is 'ball1':
+                
+                self.data.qvel[body_id] = 0  # Reinicia la velocidad
+                self.data.qacc[body_id] = 0  # Reinicia la aceleración
+                qpos_index = 0  # Este índice es un ejemplo, ajústalo según la estructura de tu modelo
+                self.data.qpos[qpos_index:qpos_index+3] = posicion_inicial
+                qpos_index_ball1 = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
+                print(qpos_index_ball1)
+            elif object_name is 'ball2':    
+                # Aquí asignamos la nueva posición (usando la posición almacenada o nueva)
+                self.data.qvel[body_id] = 0  # Reinicia la velocidad
+                self.data.qacc[body_id] = 0  # Reinicia la aceleración
+                qpos_index = 3
+                self.data.qpos[qpos_index:qpos_index+3] = posicion_inicial
+                qpos_index_ball2 = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
+                print(qpos_index_ball2)
+            
+            self.data.qvel[body_id] = 0  # Reinicia la velocidad
+            self.data.qacc[body_id] = 0  # Reinicia la aceleración
+
+            
+
+            # Llamamos a mj_forward() para que la simulación actualice las posiciones después de la modificación
+            mj.mj_forward(self.model, self.data)
+
+        print(self.data.qpos)
+           
+            
+            
+        '''self.model.body_pos[body_id] = [4,5,3]
+        mj.mj_forward(self.model, self.data)
+        print(f"Posicion de {object_name} es {self.model.body_pos[body_id]}")'''
+    
+    #Guarda la posicion inicial de las bolas
+    def guardar_posicion_inicial(self, object_name):
+        global posiciones_iniciales
+        object_id = self.obtener_id_objeto(object_name)
+        posicion_inicial = self.model.geom_pos[object_id]
+        posiciones_iniciales[object_name] = posicion_inicial
+        print("Posiciones guardadas",posiciones_iniciales)
+        return posiciones_iniciales
 
     #obtiene el radio de la bola
     def obtener_radio(self,object_name):

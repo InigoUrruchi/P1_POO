@@ -71,7 +71,7 @@ def cargar_configuracion():
     etiqueta_rampa = customtkinter.CTkLabel(configurador, text = "Elige la rampa")
     etiqueta_rampa.grid(row=0, column=3, padx=10, pady=20)
 
-    elegir_inclinacion = customtkinter.CTkSlider(configurador, from_=0.1, to=85, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, menu_rampa.get()))
+    elegir_inclinacion = customtkinter.CTkSlider(configurador, from_=0.1, to=180, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, menu_rampa.get()))
     elegir_inclinacion.grid(row=2, column=2, padx=20, pady=20)
 
     inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(nombre_rampa)}")

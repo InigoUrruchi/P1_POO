@@ -72,13 +72,14 @@ class simulador:
         self.mouse_pressed_right = False
         self.prev_mouse_x = 0
         self.prev_mouse_y = 0
-        self.zoom_factor = 1.0 #Distancia de la camara "zoom"
+        self.zoom_factor = 1.0
 
     def mouse_scroll(self, window, xoffset, yoffset):
-        #Esta función es llamada cuando se usa la ruleta del ratón        
-        if yoffset > 0 and self.cam.distance > 0.6:  # Hacia arriba (acercar)
-            self.cam.distance -= 0.3  # Acercar la cámara
-        elif yoffset < 0 and self.cam.distance < 7.5:  # Hacia abajo (alejar)
+        #Acercar la camara si se hace scroll hacia adelante   
+        if yoffset > 0 and self.cam.distance > 0.6:
+            self.cam.distance -= 0.3
+        #Acercar la camara si se hace scroll hacia atras
+        elif yoffset < 0 and self.cam.distance < 20:
             self.cam.distance += 0.3 
 
     def mouse_move(self, window, xpos, ypos):
@@ -91,8 +92,8 @@ class simulador:
         # Si el botón derecho está presionado, mover la cámara
         if self.mouse_pressed_right:
             # Ajustar azimuth (rotación horizontal) y elevation (rotación vertical)
-            self.cam.azimuth += dx * 0.1  # Escala de rotación horizontal
-            self.cam.elevation += dy * 0.1  # Escala de rotación vertical
+            self.cam.azimuth += dx * 0.1 
+            self.cam.elevation += dy * 0.1
 
         # Actualizar las posiciones anteriores del ratón
         self.prev_mouse_x = xpos
@@ -100,6 +101,7 @@ class simulador:
 
     def mouse_button(self, window, button, action, mods):
         global button_left, button_right
+        #Definir las acciones al pusar los clicks
         if button == glfw.MOUSE_BUTTON_LEFT:
             button_left = (action == glfw.PRESS)
         elif button == glfw.MOUSE_BUTTON_RIGHT:
@@ -122,101 +124,86 @@ class simulador:
     #Cambia la posicion de las bolas a la posicion inicial
     def reiniciar_bolas(self):
         global posiciones_iniciales
+        print(posiciones_iniciales)
         nombres_objetos = list(posiciones_iniciales.keys())
         for n in range(len (posiciones_iniciales)):
             object_name = nombres_objetos[n]
             object_id = self.obtener_id_objeto(object_name)
+            
             #Se obtiene el id del body atraves del id del geom
             body_id = self.model.geom_bodyid[object_id]
-            print(f"body id: {body_id}")
             posicion_inicial = posiciones_iniciales[object_name]
             
-            if object_name is 'ball1':
-                
-                self.data.qvel[body_id] = 0  # Reinicia la velocidad
-                self.data.qacc[body_id] = 0  # Reinicia la aceleración
-                qpos_index = 0  # Este índice es un ejemplo, ajústalo según la estructura de tu modelo
-                self.data.qpos[qpos_index:qpos_index+3] = posicion_inicial
-                qpos_index_ball1 = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
-                print(qpos_index_ball1)
-            elif object_name is 'ball2':    
-                # Aquí asignamos la nueva posición (usando la posición almacenada o nueva)
-                self.data.qvel[body_id] = 0  # Reinicia la velocidad
-                self.data.qacc[body_id] = 0  # Reinicia la aceleración
-                qpos_index = 3
-                self.data.qpos[qpos_index:qpos_index+3] = posicion_inicial
-                qpos_index_ball2 = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
-                print(qpos_index_ball2)
-            
-            self.data.qvel[body_id] = 0  # Reinicia la velocidad
-            self.data.qacc[body_id] = 0  # Reinicia la aceleración
+            #Reiniciar la velocidad y la aceleracion
+            self.data.qvel[body_id] = 0  
+            self.data.qacc[body_id] = 0 
 
-            
-
-            # Llamamos a mj_forward() para que la simulación actualice las posiciones después de la modificación
-            mj.mj_forward(self.model, self.data)
-
-        print(self.data.qpos)
-           
-            
-            
-        '''self.model.body_pos[body_id] = [4,5,3]
+            #Calcula en que posicion de la lista va y actualiza el valor
+            qpos_index_ball = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
+            print(qpos_index_ball)
+            self.data.qpos[qpos_index_ball:qpos_index_ball+7] = posicion_inicial
+        
+        #Actualiza la simulacion una vez hechos los cambios
         mj.mj_forward(self.model, self.data)
-        print(f"Posicion de {object_name} es {self.model.body_pos[body_id]}")'''
     
     #Guarda la posicion inicial de las bolas
     def guardar_posicion_inicial(self, object_name):
         global posiciones_iniciales
         object_id = self.obtener_id_objeto(object_name)
+        
+        #Obtener la posicion inicial de la bola
         posicion_inicial = self.model.geom_pos[object_id]
+        
+        #Añadir el cuaternion a la posicion
+        posicion_inicial = np.concatenate((posicion_inicial, [1, 0, 0, 0]))
         posiciones_iniciales[object_name] = posicion_inicial
-        print("Posiciones guardadas",posiciones_iniciales)
         return posiciones_iniciales
 
     #obtiene el radio de la bola
     def obtener_radio(self,object_name):
         object_id = self.obtener_id_objeto(object_name)
         valor_radio = self.model.geom_size[object_id][0]
-        print(f"radio = {valor_radio}")
-        print("obtener_radio ejecutada")
         return valor_radio
     
     #Actualiza el radio de la bola
     def actualizar_radio(self, nuevo_valor, object_name):
         object_id = self.obtener_id_objeto(object_name)
         self.model.geom_size[object_id][0] = nuevo_valor
-        print("actualizar_radio ejecutada")
         return nuevo_valor
-        
-    def obtener_id(self, object_name):
-        self.object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
-        print(f"el id de: {object_name} es : {self.object_id}")
-
-      # Obtener el ID del objeto
+    
+    # Obtener el ID del objeto
     def obtener_id_objeto(self, object_name):
         object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
         print(f"el id de: {object_name} es :{object_id}")
         return object_id
 
-    #Calcula el angulo de rotacion a traves del quaternion y lo pasa a grados
+    #Obtener el angulo de rotacion mediante el cuaternion
     def calcular_angulo(self, valor_inclinacion):
+        
         #Obtener la parte real del quaternion (w)
         w = valor_inclinacion[0]
+        
         #Calcular el angulo en radianes
         angulo_rad = 2 * np.arccos(w)
+        
         #Calcular el angulo en grados
         angulo_grados = np.degrees(angulo_rad)
         return angulo_grados
     
+    #Calcula el cuaternion que corresponde al angulo
     def calcular_cuaternion(self, angulo_grados):
+        
         #Calcula el angulo en radianes
         angulo_radianes = np.radians(angulo_grados)
+        
         #Calcula la parte real del cuaternion
         w = np.cos(angulo_radianes/2)
+        
         #Calcula las componentes del cuaternion (las componentes x,z son 0 porque la rotacion de la rampa es sobre el eje y)
         x = 0
         y = np.sin(angulo_radianes/2)
         z = 0
+        
         #Crea el cuaternion
         cuaternion = (w,x,y,z)
         return cuaternion
@@ -224,26 +211,19 @@ class simulador:
     #Obtiene la inclinacion de la rampa
     def obtener_inclinacion(self,object_name):
         object_id = self.obtener_id_objeto(object_name)
-        #Devuelve un quaternion con la informacion de la inclinacion de la rampa
+        
+        #Devuelve un quaternion con la informacion del angulo de la rampa
         valor_inclinacion = self.model.geom_quat[object_id]
         
-        print("obtener_inclinacion ejecutada")
         #Obtiene el angulo a partir de quaternion
         angulo_inclinacion = self.calcular_angulo(valor_inclinacion)
-        print(f"inclinacion = {angulo_inclinacion}")
         return angulo_inclinacion
     
     #Actualiza la inclinacion de la rampa
     def actualizar_inclinacion(self, nuevo_valor, object_name):
         object_id = self.obtener_id_objeto(object_name)
+        
         #Calcula el quaternion del angulo que se quiere añadir
         inclinacion =  self.calcular_cuaternion(nuevo_valor)
         self.model.geom_quat[object_id] = inclinacion
-        print("actualizar_inclinacion ejecutada")
         return nuevo_valor
-
-'''def main():
-    simulation = simulador("escenario//escena.xml")
-    simulation.run()
-if __name__ == "__main__":
-    main()'''

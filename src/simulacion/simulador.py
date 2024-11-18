@@ -124,7 +124,6 @@ class simulador:
     #Cambia la posicion de las bolas a la posicion inicial
     def reiniciar_bolas(self):
         global posiciones_iniciales
-        print(posiciones_iniciales)
         nombres_objetos = list(posiciones_iniciales.keys())
         for n in range(len (posiciones_iniciales)):
             object_name = nombres_objetos[n]
@@ -133,16 +132,23 @@ class simulador:
             #Se obtiene el id del body atraves del id del geom
             body_id = self.model.geom_bodyid[object_id]
             posicion_inicial = posiciones_iniciales[object_name]
-            
-            #Reiniciar la velocidad y la aceleracion
-            self.data.qvel[body_id] = 0  
-            self.data.qacc[body_id] = 0 
 
             #Calcula en que posicion de la lista va y actualiza el valor
             qpos_index_ball = self.model.jnt_qposadr[self.model.body_jntadr[body_id]]
-            print(qpos_index_ball)
             self.data.qpos[qpos_index_ball:qpos_index_ball+7] = posicion_inicial
-        
+
+            # Reinicia todas las velocidades del body
+            vel_index_start = self.model.body_dofadr[body_id]
+            vel_index_end = vel_index_start + self.model.body_dofnum[body_id]
+            self.data.qvel[vel_index_start:vel_index_end] = 0
+
+            # Reinicia aceleracion
+            self.data.qacc[vel_index_start:vel_index_end] = 0
+
+            # Reinicia las fuerzas residuales
+            if hasattr(self.data, 'xfrc_applied'):
+                self.data.xfrc_applied[body_id] = 0
+
         #Actualiza la simulacion una vez hechos los cambios
         mj.mj_forward(self.model, self.data)
     
@@ -174,7 +180,6 @@ class simulador:
     # Obtener el ID del objeto
     def obtener_id_objeto(self, object_name):
         object_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, object_name)
-        print(f"el id de: {object_name} es :{object_id}")
         return object_id
 
     #Obtener el angulo de rotacion mediante el cuaternion

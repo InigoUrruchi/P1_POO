@@ -11,12 +11,9 @@ inclinacion_actual = None
 nombre_bola = "ball1"
 nombre_rampa = "ramp1"
 
-def pulsar_boton():
-    print("Boton pulsado")
-
 def buscar_configuracion():
     buscador = customtkinter.CTk()
-    buscador.title("configurar")
+    buscador.title("Abrir Archivo")
     buscador.geometry("1000x1000")
 
     open_filedialog = customtkinter.CTkButton(buscador, command=abrir_archivo, text= "Abrir archivo")
@@ -39,46 +36,83 @@ def cargar_configuracion():
     global nombre_bola
     global nombre_rampa
 
-
+    # Crear la ventana principal
     configurador = customtkinter.CTk()
-    configurador.title("configurar")
-    configurador.geometry("1000x1000")
+    configurador.title("Configurar Simulación")
+    configurador.geometry("800x600")
+    configurador.grid_rowconfigure(0, weight=1)
+    configurador.grid_columnconfigure(0, weight=1)
+    background_color = configurador.cget("fg_color")
 
-    #Abre el buscador de archivos
-    '''open_filedialog = customtkinter.CTkButton(configurador, command=abrir_archivo, text= "Abrir archivo")
-    open_filedialog.grid(row=3, column=2, padx=19, pady=8, sticky="w")
+#FRAME PRINCIPAL
 
-    #Muestra el archivo que se esta usando en tiempo real
-    archivo_actual = customtkinter.CTkLabel(configurador, text= filepath)
-    archivo_actual.grid(row=3, column=1, padx=20, pady=20)'''
-    #Actualiza el valor del radio de la bola
-    elegir_radio = customtkinter.CTkSlider(configurador, from_=0.1, to=2, command=lambda valor: llamar_actualizar_radio(valor, radio_actual, menu_bola.get()))
-    elegir_radio.grid(row=1, column=2, padx=20, pady=20)
+    frame_principal = customtkinter.CTkFrame(configurador, border_color = background_color, fg_color = background_color)
+    frame_principal.grid(row = 0, column = 0,sticky = "nsew")
 
-    #Muestra el valor del radio de la bola en tiempo real
-    radio_actual = customtkinter.CTkLabel(configurador, text=f"Radio actual: {simulation.obtener_radio(nombre_bola)}")
-    radio_actual.grid(row=1, column=1, padx=10, pady=10)
+#FRAME TITULO
 
-    menu_bola = customtkinter.CTkOptionMenu(configurador, values=["ball1", "ball2"], command=lambda valor: actualizar_datos_bola(valor, elegir_radio))
-    menu_bola.grid(row=0, column=2, padx=20, pady=20)
+    # Separador horizontal
+    frame_titulo = customtkinter.CTkFrame(frame_principal, height = 10, border_width = 2, corner_radius = 0, fg_color = background_color)
+    frame_titulo.grid(row=0, column=0, columnspan=2, sticky="ew", pady=0)
 
-    menu_rampa = customtkinter.CTkOptionMenu(configurador, values=["ramp1", "ramp2"], command= lambda valor : actualizar_datos_rampa(valor, elegir_inclinacion))
-    menu_rampa.grid(row=0, column=4, padx=20, pady=20)
+    # Título centrado en la parte superior
+    titulo = customtkinter.CTkLabel(frame_titulo, text="CONFIGURAR SIMULACIÓN", font=("Arial", 18, "bold"))
+    titulo.pack(expand=True, pady= 5)
 
-    etiqueta_bola = customtkinter.CTkLabel(configurador, text = "Elige la bola")
-    etiqueta_bola.grid(row=0, column=1, padx=10, pady=20)
+#/FRAME TITULO
 
-    etiqueta_rampa = customtkinter.CTkLabel(configurador, text = "Elige la rampa")
-    etiqueta_rampa.grid(row=0, column=3, padx=10, pady=20)
+#FRAME COLUMNA
 
-    elegir_inclinacion = customtkinter.CTkSlider(configurador, from_=0.1, to=180, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, menu_rampa.get()))
-    elegir_inclinacion.grid(row=2, column=2, padx=20, pady=20)
+    # Separador vertical
+    columna = customtkinter.CTkFrame(frame_principal, width=20 ,border_width=2, corner_radius= 0, fg_color= background_color, border_color="grey")
+    columna.grid(row=1, column=0, rowspan=30, sticky="ns", pady = 0)
 
-    inclinacion_actual = customtkinter.CTkLabel(configurador, text=f"Inclinacion actual: {simulation.obtener_inclinacion(nombre_rampa)}")
-    inclinacion_actual.grid(row=2, column=1, padx=10, pady=10)
+    # Menú de opciones para seleccionar la bola
+    menu_bola = customtkinter.CTkOptionMenu(columna, values=["ball1", "ball2"], command=lambda valor: print(f"Bola seleccionada: {valor}"))
+    menu_bola.grid(row=2, column=1, padx=10, pady = 5)
 
-    resetear_bolas = customtkinter.CTkButton(configurador, text="Reiniciar las posiciones de las bolas", command=lambda: simulation.reiniciar_bolas(), fg_color= 'red')
-    resetear_bolas.grid(row=3, column=0, padx=20, pady=20)
+    # Etiqueta para seleccionar el radio de la bola
+    etiqueta_bola = customtkinter.CTkLabel(columna, text="Elige el radio de la bola", font=("Arial", 12))
+    etiqueta_bola.grid(row=1, column=1, padx=10, pady=5)
+
+    # Menú de opciones para seleccionar la rampa
+    menu_rampa = customtkinter.CTkOptionMenu(columna, values=["ramp1", "ramp2"], command=lambda valor: print(f"Rampa seleccionada: {valor}"))
+    menu_rampa.grid(row=5, column=1, padx=10, pady=0)
+
+    # Etiqueta para seleccionar la inclinación de la rampa
+    etiqueta_rampa = customtkinter.CTkLabel(columna, text="Elige la inclinación de la rampa", font=("Arial", 12))
+    etiqueta_rampa.grid(row=4, column=1, padx=10, pady=10)
+
+#/FRAME COLUMNA
+
+#FRAME DERECHA
+
+    frame_derecha = customtkinter.CTkFrame(frame_principal, width=20 ,border_width=2, corner_radius= 0, fg_color= background_color, border_color="grey")
+    frame_derecha.grid(row=1, column=1, rowspan=30, sticky="ns")
+
+    # Slider para elegir el radio de la bola
+    elegir_radio = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=2, command=lambda valor: print(f"Radio: {valor}"))
+    elegir_radio.grid(row=0, column=0, padx=10, pady=10)
+
+    # Mostrar el valor del radio actual
+    radio_actual = customtkinter.CTkLabel(frame_derecha, text="Radio actual: 1.0", font=("Arial", 12))
+    radio_actual.grid(row=0, column=1, padx=10, pady=10)
+
+    # Slider para elegir la inclinación de la rampa
+    elegir_inclinacion = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=180, command=lambda valor: print(f"Inclinación: {valor}"))
+    elegir_inclinacion.grid(row=2, column=0, padx=10, pady=20)
+
+    # Mostrar el valor de inclinación actual
+    inclinacion_actual = customtkinter.CTkLabel(frame_derecha, text="Inclinación actual: 45.0", font=("Arial", 12))
+    inclinacion_actual.grid(row=2, column=1, padx=10, pady=20)
+
+    # Botón para reiniciar las posiciones de las bolas
+    resetear_bolas = customtkinter.CTkButton(frame_derecha, text="Reiniciar las posiciones de las bolas", command=lambda: print("Bolas reiniciadas"), fg_color="red")
+    resetear_bolas.grid(row=3, column=0, columnspan=2, padx=15, pady=15)
+
+#/FRAME DERECHA
+
+#/FRAME PRINCIPAL
 
     configurador.mainloop()
 
@@ -97,6 +131,7 @@ def simular():
     else:
         print("El archivo no existe")
 
+#Inicia la simulacion dentro de un hilo
 def iniciar_simulacion():
     hilo = threading.Thread(target = simular)
     hilo.start()
@@ -110,7 +145,6 @@ def abrir_archivo():
     global simulation
     filepath = filedialog.askopenfilename(title="Abrir archivo configuración simulador", initialdir="./POO/Practica 1", filetypes=[("XML", "*.xml"),("Archivos .txt","*.txt")])
     open(filepath, 'r')
-    print ("la ruta del archivo es:",filepath,)
 
     #Activa el boton iniciar_simulacion cuando el filepath sea valido
     iniciar.configure(state = "enabled")
@@ -132,13 +166,13 @@ def llamar_actualizar_inclinacion(nuevo_valor, inclinacion_actual, nombre_rampa)
 
 def actualizar_datos_bola(nombre_bola, elegir_radio):
     global simulation
-    
-    print(f"Radio primera bola: {elegir_radio.get()}")
-
     #Obtener el valor del radio de la bola elegida
     valor_radio = simulation.obtener_radio(nombre_bola)
+
     #Cambia el valor que muestra la etiqueta por el de la bola elegid
+
     radio_actual.configure(text=f"Radio actual: {round(valor_radio, 2)}")
+
     #Cambia la posicion del slider a la correspondiente con la del radio de la bola elegida
     elegir_radio.set(valor_radio)
     print(f"Radio segunda bola: {elegir_radio.get()}")
@@ -146,51 +180,22 @@ def actualizar_datos_bola(nombre_bola, elegir_radio):
 
 def actualizar_datos_rampa(nombre_rampa, elegir_inclinacion):
     global simulation
-
     print(f"Radio primera bola: {elegir_inclinacion.get()}")
 
     #Obtener el valor del radio de la bola elegida
     valor_inclinacion = simulation.obtener_inclinacion(nombre_rampa)
+
     #Cambia el valor que muestra la etiqueta por el de la bola elegid
+
     inclinacion_actual.configure(text=f"Inclinacion actual: {round(valor_inclinacion, 2)}")
+
     #Cambia la posicion del slider a la correspondiente con la del radio de la bola elegida
     elegir_inclinacion.set(valor_inclinacion)
     print(f"Radio segunda bola: {elegir_inclinacion.get()}")
     print("La posicion del slider se ha actualizado")
 
-
-'''def elegir_id(valor, elegir_radio):
-    print(valor)
-    global id_rampa
-    global id_bola
-
-    if valor == "ramp1":
-         id_rampa = 1
-    elif valor == "ramp2":
-         id_rampa = 2
-    elif valor == "ball1":
-         id_bola = 3
-    elif valor == "ball2":
-         id_bola = 4
-    else:
-         print("El objeto no existe")
-    
-    actualizar_datos_bola(id_bola, elegir_radio)
-
-    print("rampa: ",id_rampa)
-    print("bola: ",id_bola)
-    return id_bola, id_rampa'''
-         
-
-'''def id_objeto():
-    global simulation
-    simulation.obtener_id("ramp1")
-    simulation.obtener_id("ramp2")
-    simulation.obtener_id("ball1")
-    simulation.obtener_id("ball2")'''
-
 app = customtkinter.CTk()
-app.title("my app")
+app.title("My App")
 app.geometry("1000x800")
 
 cargar = customtkinter.CTkButton(app, text="Cargar Configuracion", command=configurar, state = "disabled")

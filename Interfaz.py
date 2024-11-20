@@ -11,24 +11,6 @@ inclinacion_actual = None
 nombre_bola = "ball1"
 nombre_rampa = "ramp1"
 
-def buscar_configuracion():
-    buscador = customtkinter.CTk()
-    buscador.title("Abrir Archivo")
-    buscador.geometry("1000x1000")
-
-    open_filedialog = customtkinter.CTkButton(buscador, command=abrir_archivo, text= "Abrir archivo")
-    open_filedialog.grid(row=2, column=0, padx=19, pady=8, sticky="w")
-    
-    #Espera a que se elija un archivo, cuando se elije un archivo cierra la ventana
-    while filepath is None:
-        buscador.update()
-    
-    buscador.destroy()
-
-def buscar_configuracion_hilo():
-     hilo3 = threading.Thread(target = buscar_configuracion)
-     hilo3.start()
-
 def cargar_configuracion():
     global simulation
     global radio_actual
@@ -47,13 +29,14 @@ def cargar_configuracion():
 #FRAME PRINCIPAL
 
     frame_principal = customtkinter.CTkFrame(configurador, border_color = background_color, fg_color = background_color)
-    frame_principal.grid(row = 0, column = 0,sticky = "nsew")
+    frame_principal.grid(row = 0, column = 0,sticky = "nsew", columnspan = 4)
+    frame_principal.grid_propagate(False)
 
 #FRAME TITULO
 
     # Separador horizontal
     frame_titulo = customtkinter.CTkFrame(frame_principal, height = 10, border_width = 2, corner_radius = 0, fg_color = background_color)
-    frame_titulo.grid(row=0, column=0, columnspan=2, sticky="ew", pady=0)
+    frame_titulo.grid(row=0, column=0, columnspan=999, sticky="ew", pady=0)
 
     # Título centrado en la parte superior
     titulo = customtkinter.CTkLabel(frame_titulo, text="CONFIGURAR SIMULACIÓN", font=("Arial", 18, "bold"))
@@ -65,19 +48,19 @@ def cargar_configuracion():
 
     # Separador vertical
     columna = customtkinter.CTkFrame(frame_principal, width=20 ,border_width=2, corner_radius= 0, fg_color= background_color, border_color="grey")
-    columna.grid(row=1, column=0, rowspan=30, sticky="ns", pady = 0)
+    columna.grid(row=1, column=0, rowspan=999, sticky="ns", pady = 0)
 
     # Menú de opciones para seleccionar la bola
     menu_bola = customtkinter.CTkOptionMenu(columna, values=["ball1", "ball2"], command=lambda valor: print(f"Bola seleccionada: {valor}"))
-    menu_bola.grid(row=2, column=1, padx=10, pady = 5)
+    menu_bola.grid(row=2, column=1, padx=10, pady = 10)
 
     # Etiqueta para seleccionar el radio de la bola
     etiqueta_bola = customtkinter.CTkLabel(columna, text="Elige el radio de la bola", font=("Arial", 12))
-    etiqueta_bola.grid(row=1, column=1, padx=10, pady=5)
+    etiqueta_bola.grid(row=1, column=1, padx=10, pady=10)
 
     # Menú de opciones para seleccionar la rampa
     menu_rampa = customtkinter.CTkOptionMenu(columna, values=["ramp1", "ramp2"], command=lambda valor: print(f"Rampa seleccionada: {valor}"))
-    menu_rampa.grid(row=5, column=1, padx=10, pady=0)
+    menu_rampa.grid(row=5, column=1, padx=10, pady=10)
 
     # Etiqueta para seleccionar la inclinación de la rampa
     etiqueta_rampa = customtkinter.CTkLabel(columna, text="Elige la inclinación de la rampa", font=("Arial", 12))
@@ -88,27 +71,27 @@ def cargar_configuracion():
 #FRAME DERECHA
 
     frame_derecha = customtkinter.CTkFrame(frame_principal, width=20 ,border_width=2, corner_radius= 0, fg_color= background_color, border_color="grey")
-    frame_derecha.grid(row=1, column=1, rowspan=30, sticky="ns")
+    frame_derecha.grid(row=1, column=1, rowspan=999, sticky="ns")
 
     # Slider para elegir el radio de la bola
     elegir_radio = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=2, command=lambda valor: print(f"Radio: {valor}"))
-    elegir_radio.grid(row=0, column=0, padx=10, pady=10)
+    elegir_radio.grid(row=1, column=0, padx=10, pady=10)
 
     # Mostrar el valor del radio actual
     radio_actual = customtkinter.CTkLabel(frame_derecha, text="Radio actual: 1.0", font=("Arial", 12))
-    radio_actual.grid(row=0, column=1, padx=10, pady=10)
+    radio_actual.grid(row=0, column=0, padx=10, pady=10)
 
     # Slider para elegir la inclinación de la rampa
     elegir_inclinacion = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=180, command=lambda valor: print(f"Inclinación: {valor}"))
-    elegir_inclinacion.grid(row=2, column=0, padx=10, pady=20)
+    elegir_inclinacion.grid(row=3, column=0, padx=10, pady=10)
 
     # Mostrar el valor de inclinación actual
     inclinacion_actual = customtkinter.CTkLabel(frame_derecha, text="Inclinación actual: 45.0", font=("Arial", 12))
-    inclinacion_actual.grid(row=2, column=1, padx=10, pady=20)
+    inclinacion_actual.grid(row=2, column=0, padx=10, pady=10)
 
     # Botón para reiniciar las posiciones de las bolas
     resetear_bolas = customtkinter.CTkButton(frame_derecha, text="Reiniciar las posiciones de las bolas", command=lambda: print("Bolas reiniciadas"), fg_color="red")
-    resetear_bolas.grid(row=3, column=0, columnspan=2, padx=15, pady=15)
+    resetear_bolas.grid(row=4, column=0, columnspan=2, padx=15, pady=15)
 
 #/FRAME DERECHA
 
@@ -204,8 +187,8 @@ cargar.grid(row=0, column=0, padx=20, pady=20)
 iniciar = customtkinter.CTkButton(app, text="Iniciar Simulacion", command=iniciar_simulacion, state="disabled")
 iniciar.grid(row=1, column=0, padx=20, pady=20)
 
-buscar = customtkinter.CTkButton(app, text="Buscar Archivo", command=buscar_configuracion_hilo)
-buscar.grid(row=3, column=0, padx=20, pady=20)
+open_filedialog = customtkinter.CTkButton(app, command=abrir_archivo, text= "Abrir archivo")
+open_filedialog.grid(row=3, column=0, padx=20, pady=20, sticky="w")
 
 app.mainloop()
 

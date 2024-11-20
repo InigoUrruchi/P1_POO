@@ -1,6 +1,5 @@
 import customtkinter
 from src.simulacion.simulador import simulador
-import xml.etree.ElementTree as ET
 from customtkinter import filedialog
 import threading
 

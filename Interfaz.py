@@ -179,16 +179,16 @@ def actualizar_datos_rampa(nombre_rampa, elegir_inclinacion):
 
 app = customtkinter.CTk()
 app.title("My App")
-app.geometry("1000x800")
+app.geometry("600x300")
 
 cargar = customtkinter.CTkButton(app, text="Cargar Configuracion", command=configurar, state = "disabled")
-cargar.grid(row=0, column=0, padx=20, pady=20)
+cargar.grid(row=0, column=1, padx=30, pady=100)
 
 iniciar = customtkinter.CTkButton(app, text="Iniciar Simulacion", command=iniciar_simulacion, state="disabled")
-iniciar.grid(row=1, column=0, padx=20, pady=20)
+iniciar.grid(row=0, column=2, padx=30, pady=100)
 
 open_filedialog = customtkinter.CTkButton(app, command=abrir_archivo, text= "Abrir archivo")
-open_filedialog.grid(row=3, column=0, padx=20, pady=20, sticky="w")
+open_filedialog.grid(row=0, column=3, padx=30, pady=100, sticky="w")
 
 app.mainloop()
 

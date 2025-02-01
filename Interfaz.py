@@ -11,6 +11,10 @@ nombre_bola = "ball1"
 nombre_rampa = "ramp1"
 i = 0
 j = 0
+old_x1 = 0
+old_x2 = 0
+old_y1 = 0
+old_y2 = 0
 customtkinter.set_appearance_mode("dark")
 
 def cargar_configuracion():
@@ -202,37 +206,39 @@ def representar_posiciones(canvas, canvas_heigth, canvas_width):
         #Bola 1
         global i
         global j
+        global old_y1
+        global old_x1
+        global old_x2
+        global old_y2
+
+        x1 = simulation.bola1_xpos*5
+        y1 = simulation.bola1_zpos*5
+
         if i == 0:
              old_x1 = 0
              old_y1 = 5
         else:
-            x1 = simulation.bola1_xpos*5
-            y1 = simulation.bola1_zpos*5
-            print(x1, y1)
-            print(old_x1, old_y1)
+             pass
         
         canvas.create_line( canvas_width/2 + old_x1, canvas_heigth/2 + old_y1, x1, y1, fill='red', width = 1)
         old_x1 = x1
         old_y1 = y1
         i+=1
-        canvas.after(1000, lambda: representar_posiciones(canvas, canvas_heigth, canvas_width))
 
         #Bola 2
+        x2 = simulation.bola2_xpos*5
+        y2 = simulation.bola2_zpos*5
+
         if j == 0:
-             print(x1)
-             print(i)
              old_x2 = 2
              old_y2 = 4
         else:
-            print(i)
-            x2 = simulation.bola1_xpos*5
-            y2 = simulation.bola1_zpos*5
-            print(x2, y2)
+            pass
         
         canvas.create_line( canvas_width/2 + old_x2, canvas_heigth/2 + old_y2, x2, y2, fill='blue', width = 1)
-        old_x1 = x2
-        old_y1 = y2
-        i+=1
+        old_x2 = x2
+        old_y2 = y2
+        j+=1
         canvas.after(1000, lambda: representar_posiciones(canvas, canvas_heigth, canvas_width))
 
 def llamar_actualizar_radio(nuevo_valor, radio_actual, nombre_bola):

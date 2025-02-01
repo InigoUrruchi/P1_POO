@@ -9,8 +9,8 @@ radio_actual = None
 inclinacion_actual = None
 nombre_bola = "ball1"
 nombre_rampa = "ramp1"
-data = []
-
+i = 0
+j = 0
 customtkinter.set_appearance_mode("dark")
 
 def cargar_configuracion():
@@ -44,9 +44,8 @@ def cargar_configuracion():
     grafica.grid_columnconfigure((2, 3), weight=0)
     grafica.grid_rowconfigure((0, 1, 2), weight=1)
 
-    canvas = dibujar_ejes(grafica)
-    print(f"canvas 1: {canvas}")
-    grafica.after(1000, evaluar_posiciones(canvas))
+    canvas, canvas_width, canvas_heigth = dibujar_ejes(grafica)
+    representar_posiciones(canvas, canvas_width, canvas_heigth)
         
 #/FRAME GRAFICA
 
@@ -154,27 +153,27 @@ def abrir_archivo():
 def dibujar_ejes(grafica):
 
     canvas_width = 650
-    canvas_height = 650
+    canvas_heigth = 650
     background_color = "#373F51"
     line2_color = "#4E5973"
     line_color = "#A9BCD0"
 
     centro_x = canvas_width/2
-    centro_y = canvas_height/2
+    centro_y = canvas_heigth/2
 
-    canvas = customtkinter.CTkCanvas(grafica, width = canvas_width, height = canvas_height, bg = background_color )
+    canvas = customtkinter.CTkCanvas(grafica, width = canvas_width, height = canvas_heigth, bg = background_color )
     canvas.grid(row= 0, column=0, padx=20, pady=20)
 
     #Crear la cuadricula
 
     for x_grid in range(0, canvas_width, 25):
-        canvas.create_line(x_grid, 0, x_grid, canvas_height, fill=line2_color, width=1)
+        canvas.create_line(x_grid, 0, x_grid, canvas_heigth, fill=line2_color, width=1)
 
-    for y_grid in range(0, canvas_height, 25):
+    for y_grid in range(0, canvas_heigth, 25):
         canvas.create_line(0, y_grid, canvas_width, y_grid, fill=line2_color, width=1)
     
     #Dibujar eje y
-    canvas.create_line(centro_x, canvas_height, centro_x, 0, fill=line_color, width=1)
+    canvas.create_line(centro_x, canvas_heigth, centro_x, 0, fill=line_color, width=1)
     
     #Dibujar eje x
     canvas.create_line(0, centro_y, canvas_width, centro_y, fill=line_color, width=1)
@@ -188,54 +187,53 @@ def dibujar_ejes(grafica):
         canvas.create_text(centro_x - iX, centro_y + 10, text=str(-iX), fill=line_color, anchor='e')
 
     #Poner etiquetas eje y positivo
-    for iY in range(0, canvas_height, 50):
+    for iY in range(0, canvas_heigth, 50):
         canvas.create_text(centro_x -5, centro_y - iY, text=str(iY), fill=line_color, anchor='e')
     
     #Poner etiquetas eje y negativo
-    for iY in range(0, canvas_height, 50):
+    for iY in range(0, canvas_heigth, 50):
         canvas.create_text(centro_x -5, centro_y + iY, text=str(-iY), fill=line_color, anchor='e')
+
     
-    return canvas
-
-def evaluar_posiciones(canvas):
-    posiciones = {
-        "bola1": [],
-        "bola2": []
-    }
- 
-    posicion1 = simulation.obtener_posicion('ball1')
-    posicion2 = simulation.obtener_posicion('ball2')
-
-    posiciones["bola1"]= posicion1
-    posiciones["bola2"]= posicion2
-
-    representar_posiciones(posiciones, 'bola1', canvas)
-    representar_posiciones(posiciones, 'bola2', canvas)
+    return canvas, canvas_heigth, canvas_width
 
 #Representar las funciones del movimiento de las bolas
-def representar_posiciones(posiciones, obj, canvas):
-    pos = posiciones
-    if obj == "bola1":
-        color = "red"
-
-    elif obj =="bola2":
-        color = "blue"
-
-    for i in range(0, len(pos[obj]), 4):
+def representar_posiciones(canvas, canvas_heigth, canvas_width):
+        #Bola 1
+        global i
+        global j
         if i == 0:
-            x2 = pos[obj][i]
-            y2 = pos[obj][i+1]
-            x1 = x2
-            y1 = y2
-            print(x1, y1, x2, y2)
+             old_x1 = 0
+             old_y1 = 5
         else:
-            x1 = pos[obj][i-2]
-            y1 = pos[obj][i-1]
-            x2 = pos[obj][i]
-            y2 = pos[obj][i+1]
-            print(x1, y1, x2, y2)
+            x1 = simulation.bola1_xpos*5
+            y1 = simulation.bola1_zpos*5
+            print(x1, y1)
+            print(old_x1, old_y1)
         
-        canvas.create_line(x1,y1, x2, y2, fill=color, width = 10)
+        canvas.create_line( canvas_width/2 + old_x1, canvas_heigth/2 + old_y1, x1, y1, fill='red', width = 1)
+        old_x1 = x1
+        old_y1 = y1
+        i+=1
+        canvas.after(1000, lambda: representar_posiciones(canvas, canvas_heigth, canvas_width))
+
+        #Bola 2
+        if j == 0:
+             print(x1)
+             print(i)
+             old_x2 = 2
+             old_y2 = 4
+        else:
+            print(i)
+            x2 = simulation.bola1_xpos*5
+            y2 = simulation.bola1_zpos*5
+            print(x2, y2)
+        
+        canvas.create_line( canvas_width/2 + old_x2, canvas_heigth/2 + old_y2, x2, y2, fill='blue', width = 1)
+        old_x1 = x2
+        old_y1 = y2
+        i+=1
+        canvas.after(1000, lambda: representar_posiciones(canvas, canvas_heigth, canvas_width))
 
 def llamar_actualizar_radio(nuevo_valor, radio_actual, nombre_bola):
         #Actualiza el radio de la esfera

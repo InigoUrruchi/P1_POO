@@ -109,7 +109,16 @@ class simulador:
         while not glfw.window_should_close(self.window):
             mj.mj_step(self.model, self.data)
             mj.mj_forward(self.model, self.data)
-            
+
+
+            bola1_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, "left_sphere")
+            self.bola1_xpos = self.data.geom_xpos[bola1_id][0]
+            self.bola1_zpos = self.data.geom_xpos[bola1_id][2]
+
+            bola2_id = mj.mj_name2id(self.model, mj.mjtObj.mjOBJ_GEOM, "right_sphere")
+            self.bola2_xpos = self.data.geom_xpos[bola2_id][0]
+            self.bola2_zpos = self.data.geom_xpos[bola2_id][2]
+
             # Actualizar la escena y renderizar
             mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam, mj.mjtCatBit.mjCAT_ALL.value, self.scene)
             mj.mjr_render(mj.MjrRect(0, 0, 1200, 900), self.scene, self.context)
@@ -149,20 +158,6 @@ class simulador:
 
         #Actualiza la simulacion una vez hechos los cambios
         mj.mj_forward(self.model, self.data)
-    
-    def obtener_posicion(self, object_name):
-        coordenadas = ()
-        object_id = self.obtener_id_objeto(object_name)
-        
-        #Obtener la posicion inicial de la bola
-        posicion = self.model.geom_pos[object_id]
-
-        #Obtener las cordenadas X,Z del cuaternion 
-        
-        coordenadas = (posicion[0], posicion[1])
-        print(coordenadas)
-
-        return coordenadas
 
     #Guarda la posicion de las bolas
     def guardar_posicion_inicial(self, object_name):

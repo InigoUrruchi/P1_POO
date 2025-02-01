@@ -29,8 +29,6 @@ class simulador:
 
     # Inicialización de MuJoCo
     def __init__(self, path):
-        #global model, data, scene, cam, window, context, opt, object_id
-        #self.model = None
         # Inicialización de GLFW
         if not glfw.init():
             raise RuntimeError("Failed to initialize GLFW")
@@ -152,7 +150,21 @@ class simulador:
         #Actualiza la simulacion una vez hechos los cambios
         mj.mj_forward(self.model, self.data)
     
-    #Guarda la posicion inicial de las bolas
+    def obtener_posicion(self, object_name):
+        coordenadas = ()
+        object_id = self.obtener_id_objeto(object_name)
+        
+        #Obtener la posicion inicial de la bola
+        posicion = self.model.geom_pos[object_id]
+
+        #Obtener las cordenadas X,Z del cuaternion 
+        
+        coordenadas = (posicion[0], posicion[1])
+        print(coordenadas)
+
+        return coordenadas
+
+    #Guarda la posicion de las bolas
     def guardar_posicion_inicial(self, object_name):
         global posiciones_iniciales
         object_id = self.obtener_id_objeto(object_name)

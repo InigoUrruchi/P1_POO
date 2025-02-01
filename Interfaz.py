@@ -9,6 +9,9 @@ radio_actual = None
 inclinacion_actual = None
 nombre_bola = "ball1"
 nombre_rampa = "ramp1"
+data = []
+
+customtkinter.set_appearance_mode("dark")
 
 def cargar_configuracion():
     global simulation
@@ -31,11 +34,27 @@ def cargar_configuracion():
     frame_principal.grid(row = 0, column = 0,sticky = "nsew", columnspan = 4)
     frame_principal.grid_propagate(False)
 
+#FRAME GRAFICA
+
+    grafica = customtkinter.CTkFrame(frame_principal, border_color = background_color, fg_color = background_color)
+    grafica.grid(row=1, column=2, rowspan=999, sticky="nsew", padx=20, pady=10)
+
+    # configure grid layout (4x4)
+    grafica.grid_columnconfigure(1, weight=1)
+    grafica.grid_columnconfigure((2, 3), weight=0)
+    grafica.grid_rowconfigure((0, 1, 2), weight=1)
+
+    canvas = dibujar_ejes(grafica)
+    print(f"canvas 1: {canvas}")
+    grafica.after(1000, evaluar_posiciones(canvas))
+        
+#/FRAME GRAFICA
+
 #FRAME TITULO
 
     # Separador horizontal
-    frame_titulo = customtkinter.CTkFrame(frame_principal, height = 10, border_width = 2, corner_radius = 0, fg_color = background_color)
-    frame_titulo.grid(row=0, column=0, columnspan=999, sticky="ew", pady=0)
+    frame_titulo = customtkinter.CTkFrame(frame_principal, height = 0, border_width = 2, corner_radius = 0, fg_color = background_color)
+    frame_titulo.grid(row=0, column=0, columnspan=9, sticky="new", pady=0)
 
     # Título centrado en la parte superior
     titulo = customtkinter.CTkLabel(frame_titulo, text="CONFIGURAR SIMULACIÓN", font=("Arial", 18, "bold"))
@@ -131,6 +150,92 @@ def abrir_archivo():
     #Activa el boton iniciar_simulacion cuando el filepath sea valido
     iniciar.configure(state = "enabled")
     return filepath
+
+def dibujar_ejes(grafica):
+
+    canvas_width = 650
+    canvas_height = 650
+    background_color = "#373F51"
+    line2_color = "#4E5973"
+    line_color = "#A9BCD0"
+
+    centro_x = canvas_width/2
+    centro_y = canvas_height/2
+
+    canvas = customtkinter.CTkCanvas(grafica, width = canvas_width, height = canvas_height, bg = background_color )
+    canvas.grid(row= 0, column=0, padx=20, pady=20)
+
+    #Crear la cuadricula
+
+    for x_grid in range(0, canvas_width, 25):
+        canvas.create_line(x_grid, 0, x_grid, canvas_height, fill=line2_color, width=1)
+
+    for y_grid in range(0, canvas_height, 25):
+        canvas.create_line(0, y_grid, canvas_width, y_grid, fill=line2_color, width=1)
+    
+    #Dibujar eje y
+    canvas.create_line(centro_x, canvas_height, centro_x, 0, fill=line_color, width=1)
+    
+    #Dibujar eje x
+    canvas.create_line(0, centro_y, canvas_width, centro_y, fill=line_color, width=1)
+    
+    #Poner etiquetas eje x positivo
+    for iX in range(0, canvas_width, 50):
+        canvas.create_text(centro_x + iX, centro_y+10, text=str(iX), fill=line_color, anchor='e')
+    
+    #Poner etiquetas eje x negativo
+    for iX in range(0, canvas_width, 50):
+        canvas.create_text(centro_x - iX, centro_y + 10, text=str(-iX), fill=line_color, anchor='e')
+
+    #Poner etiquetas eje y positivo
+    for iY in range(0, canvas_height, 50):
+        canvas.create_text(centro_x -5, centro_y - iY, text=str(iY), fill=line_color, anchor='e')
+    
+    #Poner etiquetas eje y negativo
+    for iY in range(0, canvas_height, 50):
+        canvas.create_text(centro_x -5, centro_y + iY, text=str(-iY), fill=line_color, anchor='e')
+    
+    return canvas
+
+def evaluar_posiciones(canvas):
+    posiciones = {
+        "bola1": [],
+        "bola2": []
+    }
+ 
+    posicion1 = simulation.obtener_posicion('ball1')
+    posicion2 = simulation.obtener_posicion('ball2')
+
+    posiciones["bola1"]= posicion1
+    posiciones["bola2"]= posicion2
+
+    representar_posiciones(posiciones, 'bola1', canvas)
+    representar_posiciones(posiciones, 'bola2', canvas)
+
+#Representar las funciones del movimiento de las bolas
+def representar_posiciones(posiciones, obj, canvas):
+    pos = posiciones
+    if obj == "bola1":
+        color = "red"
+
+    elif obj =="bola2":
+        color = "blue"
+
+    for i in range(0, len(pos[obj]), 4):
+        if i == 0:
+            x2 = pos[obj][i]
+            y2 = pos[obj][i+1]
+            x1 = x2
+            y1 = y2
+            print(x1, y1, x2, y2)
+        else:
+            x1 = pos[obj][i-2]
+            y1 = pos[obj][i-1]
+            x2 = pos[obj][i]
+            y2 = pos[obj][i+1]
+            print(x1, y1, x2, y2)
+        
+        canvas.create_line(x1,y1, x2, y2, fill=color, width = 10)
 
 def llamar_actualizar_radio(nuevo_valor, radio_actual, nombre_bola):
         #Actualiza el radio de la esfera

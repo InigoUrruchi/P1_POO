@@ -163,6 +163,7 @@ class simulador:
         #Añadir el cuaternion a la posicion
         posicion_inicial = np.concatenate((posicion_inicial, [1, 0, 0, 0]))
         posiciones_iniciales[object_name] = posicion_inicial
+        print(posiciones_iniciales)
         return posiciones_iniciales
 
     #obtiene el radio de la bola

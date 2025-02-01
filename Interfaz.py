@@ -73,7 +73,7 @@ def cargar_configuracion():
     frame_derecha.grid(row=1, column=1, rowspan=999, sticky="ns")
 
     # Slider para elegir el radio de la bola
-    elegir_radio = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=2, command=lambda valor: print(f"Radio: {valor}"))
+    elegir_radio = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=2, command=lambda valor: llamar_actualizar_radio(valor, radio_actual, menu_bola.get()))
     elegir_radio.grid(row=1, column=0, padx=10, pady=10)
 
     # Mostrar el valor del radio actual
@@ -81,7 +81,7 @@ def cargar_configuracion():
     radio_actual.grid(row=0, column=0, padx=10, pady=10)
 
     # Slider para elegir la inclinación de la rampa
-    elegir_inclinacion = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=180, command=lambda valor: print(f"Inclinación: {valor}"))
+    elegir_inclinacion = customtkinter.CTkSlider(frame_derecha, from_=0.1, to=180, command=lambda valor: llamar_actualizar_inclinacion(valor, inclinacion_actual, menu_rampa.get()))
     elegir_inclinacion.grid(row=3, column=0, padx=10, pady=10)
 
     # Mostrar el valor de inclinación actual
@@ -89,7 +89,7 @@ def cargar_configuracion():
     inclinacion_actual.grid(row=2, column=0, padx=10, pady=10)
 
     # Botón para reiniciar las posiciones de las bolas
-    resetear_bolas = customtkinter.CTkButton(frame_derecha, text="Reiniciar las posiciones de las bolas", command=lambda: print("Bolas reiniciadas"), fg_color="red")
+    resetear_bolas = customtkinter.CTkButton(frame_derecha, text="Reiniciar las posiciones de las bolas", command=lambda: simulation.reiniciar_bolas(), fg_color="red")
     resetear_bolas.grid(row=4, column=0, columnspan=2, padx=15, pady=15)
 
 #/FRAME DERECHA

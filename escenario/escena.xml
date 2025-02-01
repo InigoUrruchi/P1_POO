@@ -24,20 +24,20 @@
     <geom name="ramp1" type="box" size="2 1 0.03" pos="0 1 0" euler="0 45 0" material="metal" />
     <geom name="ramp2" type="box" size="2 1 0.03" pos="4 1 0" euler="0 60 0" material="metal" />
 
-    <body name="ball1" pos="0 0 5">
+    <body name="ball1" pos="0 0.5 5">
       <freejoint />
-      <light pos="1 0 3" dir="-1 0 -3" mode="trackcom" />
-      <light pos="-1 0 3" dir="1 0 -3" mode="trackcom" />
-      <geom name="ball1" type="sphere" pos="0 0 5" size="1" mass="5.0347" rgba="1 0.84 0 1" material="metal" />
-      <site name="weight1" pos=".013 .013 .013" size="0.005" />
+      <light pos="0 1 5" dir="-1 0 -3" mode="trackcom"/>
+      <light pos="0 1 5" dir="1 0 -3" mode="trackcom" />
+      <geom name="ball1" type="sphere" pos="0 1 5" size="1" mass="5.0347" rgba="1 0.84 0 1" material="metal" />
+      <site name="weight1" pos="0 1 5" size="0.05" />
     </body>
 
-    <body name="ball2" pos="4 0.5 4">
+    <body name="ball2" pos="2 0.5 4">
       <freejoint />
-      <light pos="1 0 3" dir="-1 0 -3" mode="trackcom" />
-      <light pos="-1 0 3" dir="1 0 -3" mode="trackcom" />
-      <geom name="ball2" type="sphere" pos="1 0 3" size="0.5" mass="20.0347" rgba="0.8 0.5 0.2 1" material="metal" />
-      <site name="weight2" pos=".013 .013 .013" size="0.005" />
+      <light pos="2 0.5 4" dir="-1 0 -3" mode="trackcom" />
+      <light pos="2 0.5 4" dir="1 0 -3" mode="trackcom" />
+      <geom name="ball2" type="sphere" pos="2 0.5 4" size="0.5" mass="20.0347" rgba="0.8 0.5 0.2 1" material="metal" />
+      <site name="weight2" pos="2 0.5 4" size="0.05" />
     </body>
   </worldbody>
 </mujoco>
